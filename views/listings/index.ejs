@@ -1,0 +1,282 @@
+<% layout('layouts/boilerplate') %>
+
+<style>
+    /* Filters Section Styling */
+    #filters {
+        display: flex;
+        overflow-x: auto;
+        gap: 20px;
+        padding: 12px 0;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+        margin-left: 20px;
+        margin-right: 20px;
+        justify-content: flex-start;
+    }
+
+    #filters::-webkit-scrollbar {
+        display: none;
+    }
+
+    .filter {
+        flex: 0 0 auto;
+        text-align: center;
+    }
+
+    .category-icon {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        color: #555;
+        text-decoration: none;
+        transition: color 0.3s ease, transform 0.2s ease;
+        padding: 8px;
+        border-radius: 8px;
+    }
+
+    .category-icon:hover {
+        color: #333;
+        transform: translateY(-2px);
+    }
+
+    .category-icon div {
+        font-size: 1.6rem;
+        margin-bottom: 5px;
+    }
+
+    .category-icon p {
+        margin-top: 0;
+        font-size: 0.85rem;
+        white-space: nowrap;
+    }
+
+    .category-icon.active {
+        color: #ff385c;
+        font-weight: bold;
+        border-bottom: 2px solid #ff385c;
+    }
+
+
+    /* Toggle Switch Styling */
+    .toggle-switch {
+        display: flex;
+        justify-content: flex-end; /* Align to the right side */
+        align-items: center;
+        padding: 1rem 20px; /* Padding for the toggle section */
+        margin-bottom: 1rem; /* Space below the toggle */
+    }
+
+    
+    /* Listing Cards Section Styling */
+    .row {
+        padding: 0 20px;
+    }
+
+    .listing-card {
+        border: none;
+        margin-bottom: 2rem;
+        box-shadow: none;
+        transition: transform 0.2s ease;
+        cursor: pointer;
+    }
+
+    .listing-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .listing-card .card-img-top {
+        border-radius: 12px;
+        object-fit: cover;
+        height: 18rem;
+        width: 100%;
+    }
+
+    .listing-card .card-img-overlay {
+        display: none;
+    }
+
+    .listing-link {
+        text-decoration: none;
+        color: inherit;
+    }
+
+    .listing-card .card-body {
+        padding: 0.75rem 0.2rem 0.2rem 0.2rem;
+    }
+
+    .listing-card .card-text {
+        margin-bottom: 0;
+        line-height: 1.4;
+    }
+
+    .listing-card .card-text b {
+        font-weight: 600;
+        color: #222;
+        display: block;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        font-size: 1.05rem;
+    }
+
+    .listing-card .price-display {
+        font-size: 1rem;
+        color: #444;
+        font-weight: 500;
+    }
+
+    /* Initial state: hidden (using !important for strong override) */
+    .tax-info {
+        font-size: 0.85rem;
+        color: #777;
+        font-weight: 400;
+        margin-left: 5px;
+        display: none !important; /* Forces hiding */
+    }
+
+    /* Class to show tax info when contentWrapper has 'show-tax' class (using !important for strong override) */
+    #main-content-wrapper.show-tax .tax-info {
+        display: inline !important; /* Forces showing */
+    }
+</style>
+
+<div id="main-content-wrapper">
+    <div id="filters">
+        <div class="filter">
+            <a href="/listings?category=trending" class="category-icon <%= category === 'trending' ? 'active' : '' %>">
+                <div><i class="fa-solid fa-fire"></i></div>
+                <p>trending</p>
+            </a>
+        </div>
+
+        <div class="filter">
+            <a href="/listings?category=rooms" class="category-icon <%= category === 'rooms' ? 'active' : '' %>">
+                <div><i class="fa-solid fa-bed"></i></div>
+                <p>rooms</p>
+            </a>
+        </div>
+
+        <div class="filter">
+            <a href="/listings?category=farms" class="category-icon <%= category === 'farms' ? 'active' : '' %>">
+                <div><i class="fa-solid fa-cow"></i></div>
+                <p>farms</p>
+            </a>
+        </div>
+
+        <div class="filter">
+            <a href="/listings?category=iconic cities" class="category-icon <%= category === 'iconic cities' ? 'active' : '' %>">
+                <div><i class="fa-solid fa-city"></i></div>
+                <p>iconic cities</p>
+            </a>
+        </div>
+
+        <div class="filter">
+            <a href="/listings?category=castle" class="category-icon <%= category === 'castle' ? 'active' : '' %>">
+                <div><i class="fa-solid fa-chess-rook"></i></div>
+                <p>castle</p>
+            </a>
+        </div>
+
+        <div class="filter">
+            <a href="/listings?category=amazing pools" class="category-icon <%= category === 'amazing pools' ? 'active' : '' %>">
+                <div><i class="fa-solid fa-person-swimming"></i></div>
+                <p>amazing pools</p>
+            </a>
+        </div>
+
+        <div class="filter">
+            <a href="/listings?category=camping" class="category-icon <%= category === 'camping' ? 'active' : '' %>">
+                <div><i class="fa-solid fa-campground"></i></div>
+                <p>camping</p>
+            </a>
+        </div>
+
+        <div class="filter">
+            <a href="/listings?category=arctic" class="category-icon <%= category === 'arctic' ? 'active' : '' %>">
+                <div><i class="fa-solid fa-snowflake"></i></div>
+                <p>arctic</p>
+            </a>
+        </div>
+
+        <div class="filter">
+            <a href="/listings?category=beach" class="category-icon <%= category === 'beach' ? 'active' : '' %>">
+                <div><i class="fa-solid fa-umbrella-beach"></i></div>
+                <p>beach</p>
+            </a>
+        </div>
+    </div>
+
+    <div class="toggle-switch">
+        <div class="form-check form-switch form-check-reverse">
+            <input class="form-check-input"
+                type="checkbox"
+                role="switch"
+                id="flexSwitchCheckDefault">
+            <label class="form-check-label" for="flexSwitchCheckDefault">Display total after taxes</label>
+        </div>
+    </div>
+
+    <div class="row row-cols-lg-3 row-cols-md-2 row-cols-sm-1">
+        <% for (let listing of allListings) { %>
+            <div class="col">
+                <a href="/listings/<%= listing._id %>" class="listing-link">
+                    <div class="card listing-card">
+                        <img
+                            src="<%= listing.image.url %>"
+                            class="card-img-top"
+                            alt="listing_image"
+                        />
+                        <div class="card-body">
+                            <p class="card-text">
+                                <b><%= listing.title %></b> <br />
+                                <span class="price-display">&#8377;<%= listing.price ? listing.price.toLocaleString("en-IN") : "N/A" %> / night</span>
+                                <i class="tax-info">+18% GST</i>
+                            </p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        <% } %>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        let taxSwitch = document.querySelector("#flexSwitchCheckDefault");
+        let contentWrapper = document.querySelector("#main-content-wrapper"); // Target the wrapper div
+
+        // Ensure both elements are found
+        if (!taxSwitch) {
+            console.error("Error: 'flexSwitchCheckDefault' (tax switch) element not found!");
+        }
+        if (!contentWrapper) {
+            console.error("Error: '#main-content-wrapper' element not found!");
+        }
+
+        if (taxSwitch && contentWrapper) {
+            taxSwitch.addEventListener("change", function() { // Use 'change' event for checkboxes
+                if (this.checked) {
+                    contentWrapper.classList.add("show-tax");
+                    // console.log("Checkbox is checked. Adding 'show-tax' class."); // Debugging
+                } else {
+                    contentWrapper.classList.remove("show-tax");
+                    // console.log("Checkbox is unchecked. Removing 'show-tax' class."); // Debugging
+                }
+
+                // --- More Debugging (Uncomment to see current styles) ---
+                // let firstTaxInfo = document.querySelector(".tax-info");
+                // if (firstTaxInfo) {
+                //     console.log("First .tax-info element's display style after toggle:", window.getComputedStyle(firstTaxInfo).display);
+                // }
+                // --- End Debugging ---
+            });
+
+            // Set initial state on page load based on the checkbox's initial 'checked' attribute
+            if (taxSwitch.checked) {
+                contentWrapper.classList.add("show-tax");
+            } else {
+                contentWrapper.classList.remove("show-tax");
+            }
+        }
+    });
+</script>
