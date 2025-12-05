@@ -1,7 +1,6 @@
 if (process.env.NODE_ENV != "production") {
   require("dotenv").config();
 }
-console.log("Cloud Name:", process.env.CLOUDINARY_CLOUD_NAME);
 
 const express = require("express");
 const app = express();
@@ -37,8 +36,6 @@ main()
 
 async function main() {
   await mongoose.connect(process.env.ATLASDB_URL, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
     ssl: true,
   });
 }
