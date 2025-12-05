@@ -40,6 +40,7 @@ module.exports.showListing = async (req, res) => {
 };
 
 module.exports.createListing = async (req, res, next) => {
+  // 1. Geocoding
   let response = await geocodingClient
     .forwardGeocode({
       query: req.body.listing.location,
@@ -47,36 +48,21 @@ module.exports.createListing = async (req, res, next) => {
     })
     .send();
 
+  // 2. Data Validation
   if (!req.body.listing) {
     throw new ExpressError(400, "send valid data for listing");
   }
 
-  // Declare listingData from request body
-  const listingData = req.body.listing;
+  // 3. Create Listing Instance
+  const newListing = new Listing(req.body.listing);
 
-  // Ensure image object exists and has valid structure
-  if (!listingData.image || typeof listingData.image !== "object") {
-    listingData.image = { url: DEFAULT_IMAGE_URL, filename: DEFAULT_FILENAME };
-  } else {
-    if (!listingData.image.url || !listingData.image.url.trim()) {
-      listingData.image.url = DEFAULT_IMAGE_URL;
-    }
-    if (!listingData.image.filename) {
-      listingData.image.filename = DEFAULT_FILENAME;
-    }
-  }
-  let url = req.file.path;
-  let filename = req.file.filename;
-
-  const newListing = new Listing(listingData);
+  // 4. Set Owner, Image, and Geometry
   newListing.owner = req.user._id;
-  newListing.image = { url, filename };
-
+  newListing.image = { url: req.file.path, filename: req.file.filename };
   newListing.geometry = response.body.features[0].geometry;
 
+  // 5. Save and Redirect
   let savedListing = await newListing.save();
-  console.log(savedListing);
-  // console.log(newListing);
   req.flash("success", "New Listing Created");
   res.redirect("/listings");
 };
