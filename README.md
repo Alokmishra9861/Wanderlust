@@ -36,3 +36,6 @@ Wanderlust/
 ├── views/          # EJS templates for rendering pages
 ├── app.js          # Main server entry point
 └── .env            # Environment variables (API keys, DB URI)
+
+
+click here- https://wanderlust-hoz1.onrender.com/listings
