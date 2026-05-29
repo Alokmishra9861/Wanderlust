@@ -2,16 +2,22 @@
 
 <style>
     /* Filters Section Styling */
+    #filters-container {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin: 1rem 20px 2rem 20px;
+    }
+
     #filters {
         display: flex;
         overflow-x: auto;
-        gap: 20px;
-        padding: 12px 0;
-        scrollbar-width: none;
-        -ms-overflow-style: none;
-        margin-left: 20px;
-        margin-right: 20px;
-        justify-content: flex-start;
+        gap: 35px;
+        scrollbar-width: none; /* Firefox */
+        -ms-overflow-style: none;  /* IE and Edge */
+        flex-grow: 1;
+        padding-bottom: 5px;
+        justify-content: center;
     }
 
     #filters::-webkit-scrollbar {
@@ -27,46 +33,68 @@
         display: flex;
         flex-direction: column;
         align-items: center;
-        color: #555;
+        color: #717171;
         text-decoration: none;
-        transition: color 0.3s ease, transform 0.2s ease;
-        padding: 8px;
-        border-radius: 8px;
+        transition: all 0.2s ease;
+        padding: 8px 0;
+        border-bottom: 2px solid transparent;
+        opacity: 0.8;
     }
 
     .category-icon:hover {
-        color: #333;
-        transform: translateY(-2px);
+        color: #000;
+        opacity: 1;
+        border-bottom: 2px solid #dddddd;
     }
 
     .category-icon div {
-        font-size: 1.6rem;
-        margin-bottom: 5px;
+        font-size: 1.5rem;
+        margin-bottom: 8px;
     }
 
     .category-icon p {
         margin-top: 0;
         font-size: 0.85rem;
+        font-weight: 500;
         white-space: nowrap;
     }
 
     .category-icon.active {
-        color: #ff385c;
-        font-weight: bold;
-        border-bottom: 2px solid #ff385c;
+        color: #000;
+        opacity: 1;
+        border-bottom: 2px solid #000;
     }
-
 
     /* Toggle Switch Styling */
     .toggle-switch {
         display: flex;
-        justify-content: flex-end; /* Align to the right side */
         align-items: center;
-        padding: 1rem 20px; /* Padding for the toggle section */
-        margin-bottom: 1rem; /* Space below the toggle */
+        border: 1px solid #dddddd;
+        border-radius: 12px;
+        padding: 10px 16px;
+        margin-left: 20px;
+        background-color: #fff;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        transition: box-shadow 0.2s ease;
     }
 
+    .toggle-switch:hover {
+        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+
+    .toggle-switch .form-check-label {
+        font-size: 0.85rem;
+        font-weight: 500;
+        color: #222;
+        margin-right: 10px;
+        cursor: pointer;
+    }
     
+    .form-check-input:checked {
+        background-color: #222;
+        border-color: #222;
+    }
+
     /* Listing Cards Section Styling */
     .row {
         padding: 0 20px;
@@ -74,39 +102,32 @@
 
     .listing-card {
         border: none;
-        margin-bottom: 2rem;
+        margin-bottom: 2.5rem;
         box-shadow: none;
-        transition: transform 0.2s ease;
+        background: transparent;
         cursor: pointer;
     }
 
-    .listing-card:hover {
-        transform: translateY(-5px);
-    }
-
     .listing-card .card-img-top {
-        border-radius: 12px;
+        border-radius: 16px;
         object-fit: cover;
-        height: 18rem;
+        aspect-ratio: 1 / 0.95;
         width: 100%;
-    }
-
-    .listing-card .card-img-overlay {
-        display: none;
     }
 
     .listing-link {
         text-decoration: none;
         color: inherit;
+        display: block;
     }
 
     .listing-card .card-body {
-        padding: 0.75rem 0.2rem 0.2rem 0.2rem;
+        padding: 12px 4px;
     }
 
     .listing-card .card-text {
         margin-bottom: 0;
-        line-height: 1.4;
+        line-height: 1.3;
     }
 
     .listing-card .card-text b {
@@ -117,18 +138,26 @@
         overflow: hidden;
         text-overflow: ellipsis;
         font-size: 1.05rem;
+        margin-bottom: 4px;
     }
 
     .listing-card .price-display {
         font-size: 1rem;
-        color: #444;
-        font-weight: 500;
+        color: #222;
+        font-weight: 600;
+        margin-top: 6px;
+        display: inline-block;
+    }
+    
+    .price-display span {
+        font-weight: 400;
+        color: #717171;
     }
 
     /* Initial state: hidden (using !important for strong override) */
     .tax-info {
-        font-size: 0.85rem;
-        color: #777;
+        font-size: 0.9rem;
+        color: #717171;
         font-weight: 400;
         margin-left: 5px;
         display: none !important; /* Forces hiding */
@@ -141,7 +170,8 @@
 </style>
 
 <div id="main-content-wrapper">
-    <div id="filters">
+    <div id="filters-container">
+        <div id="filters">
         <div class="filter">
             <a href="/listings?category=trending" class="category-icon <%= category === 'trending' ? 'active' : '' %>">
                 <div><i class="fa-solid fa-fire"></i></div>
@@ -205,39 +235,48 @@
             </a>
         </div>
     </div>
-
-    <div class="toggle-switch">
-        <div class="form-check form-switch form-check-reverse">
-            <input class="form-check-input"
-                type="checkbox"
-                role="switch"
-                id="flexSwitchCheckDefault">
-            <label class="form-check-label" for="flexSwitchCheckDefault">Display total after taxes</label>
+        <div class="toggle-switch">
+            <div class="form-check form-switch form-check-reverse">
+                <input class="form-check-input"
+                    type="checkbox"
+                    role="switch"
+                    id="flexSwitchCheckDefault">
+                <label class="form-check-label" for="flexSwitchCheckDefault">Display total after taxes</label>
+            </div>
         </div>
     </div>
 
-    <div class="row row-cols-lg-3 row-cols-md-2 row-cols-sm-1">
-        <% for (let listing of allListings) { %>
-            <div class="col">
-                <a href="/listings/<%= listing._id %>" class="listing-link">
-                    <div class="card listing-card">
-                        <img
-                            src="<%= listing.image.url %>"
-                            class="card-img-top"
-                            alt="listing_image"
-                        />
-                        <div class="card-body">
-                            <p class="card-text">
-                                <b><%= listing.title %></b> <br />
-                                <span class="price-display">&#8377;<%= listing.price ? listing.price.toLocaleString("en-IN") : "N/A" %> / night</span>
-                                <i class="tax-info">+18% GST</i>
-                            </p>
+    <% if (allListings && allListings.length > 0) { %>
+        <div class="row row-cols-lg-3 row-cols-md-2 row-cols-sm-1">
+            <% for (let listing of allListings) { %>
+                <div class="col">
+                    <a href="/listings/<%= listing._id %>" class="listing-link">
+                        <div class="card listing-card">
+                            <img
+                                src="<%= listing.image.url %>"
+                                class="card-img-top"
+                                alt="listing_image"
+                            />
+                            <div class="card-body">
+                                <p class="card-text">
+                                    <b><%= listing.title %></b>
+                                    <span class="price-display">&#8377;<%= listing.price ? listing.price.toLocaleString("en-IN") : "N/A" %> <span>night</span></span>
+                                    <i class="tax-info">+18% GST</i>
+                                </p>
+                            </div>
                         </div>
-                    </div>
-                </a>
-            </div>
-        <% } %>
-    </div>
+                    </a>
+                </div>
+            <% } %>
+        </div>
+    <% } else { %>
+        <div class="empty-state text-center" style="margin-top: 5rem; margin-bottom: 5rem;">
+            <i class="fa-solid fa-magnifying-glass" style="font-size: 3rem; color: #ccc; margin-bottom: 1rem;"></i>
+            <h3>No results for now</h3>
+            <p class="text-muted" style="font-size: 1.1rem;">We couldn't find any listings for this category. Why not create one?</p>
+            <a href="/listings/new" class="btn btn-dark mt-3 px-4 py-2" style="border-radius: 8px; font-weight: 500;">Create a Listing</a>
+        </div>
+    <% } %>
 </div>
 
 <script>

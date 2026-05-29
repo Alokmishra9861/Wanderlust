@@ -1,4 +1,5 @@
 const Listing = require("../models/listing");
+const ExpressError = require("../utils/ExpressError.js");
 const DEFAULT_IMAGE_URL =
   "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80";
 const DEFAULT_FILENAME = "";
@@ -40,17 +41,23 @@ module.exports.showListing = async (req, res) => {
 };
 
 module.exports.createListing = async (req, res, next) => {
-  // 1. Geocoding
-  let response = await geocodingClient
-    .forwardGeocode({
-      query: req.body.listing.location,
-      limit: 1,
-    })
-    .send();
-
   // 2. Data Validation
   if (!req.body.listing) {
     throw new ExpressError(400, "send valid data for listing");
+  }
+
+  // 1. Geocoding
+  let response;
+  try {
+    response = await geocodingClient
+      .forwardGeocode({
+        query: req.body.listing.location,
+        limit: 1,
+      })
+      .send();
+  } catch (err) {
+    console.error("Mapbox Geocoding Error:", err.message);
+    response = { body: { features: [] } };
   }
 
   // 3. Create Listing Instance
@@ -58,8 +65,24 @@ module.exports.createListing = async (req, res, next) => {
 
   // 4. Set Owner, Image, and Geometry
   newListing.owner = req.user._id;
-  newListing.image = { url: req.file.path, filename: req.file.filename };
-  newListing.geometry = response.body.features[0].geometry;
+  
+  if (req.file) {
+    newListing.image = { url: req.file.path, filename: req.file.filename };
+  } else {
+    newListing.image = { url: DEFAULT_IMAGE_URL, filename: DEFAULT_FILENAME };
+  }
+
+  if (req.file) {
+    console.log(req.file.path);
+  }
+
+  if (response.body.features && response.body.features.length > 0) {
+    newListing.geometry = response.body.features[0].geometry;
+  } else {
+    newListing.geometry = { type: 'Point', coordinates: [0, 0] };
+  }
+
+  console.log(newListing);
 
   // 5. Save and Redirect
   let savedListing = await newListing.save();
